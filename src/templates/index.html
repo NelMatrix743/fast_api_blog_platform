@@ -1,12 +1,5 @@
 {% extends 'base.html' %}
 
-{% block content %}    
-
-    <div style="background-color: red; font-family: sans-serif;">
-        HELLO, {{ name }}
-    </div>
-
-{% endblock %}{% extends "layout.html" %}
 {% block content %}
   {% for post in posts %}
     <article class="content-section py-3 px-4 mb-4">
