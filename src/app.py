@@ -18,9 +18,10 @@ app: FastAPI = FastAPI()
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+
 # endpoints are defined here
 
-@app.get('/')
+@app.get('/', name="home")
 def index(request: Request) -> Response:
     return templates.TemplateResponse(request, "index.html")
 
