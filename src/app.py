@@ -21,7 +21,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # endpoints are defined here
 
-@app.get('/', name="home")
+@app.get('/', name="home", include_in_schema=False)
 def index(request: Request) -> Response:
     return templates.TemplateResponse(request, "index.html")
 
