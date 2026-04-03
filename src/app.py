@@ -3,6 +3,8 @@ from fastapi.responses import Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from pathlib import Path
 
 from .dummy_data import DUMMY_POSTS
@@ -71,6 +73,36 @@ def get_post(post_id: int) -> JSONResponse:
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found"
     )
+
+
+
+# --- general exception handling ---
+@app.exception_handler(StarletteHTTPException)
+def general_http_exception_handler(
+    request: Request,
+    exception: StarletteHTTPException) -> JSONResponse:
+    message = (
+        exception.detail
+        if exception.detail
+        else "An error occurred. Please check you request and try again."
+    )
+
+    if request.url.path.startswith("/api"):
+        return JSONResponse(
+            status_code=exception.status_code,
+            content={"detail" : message},
+        )
+    return templates.TemplateResponse(
+        request,
+        "error.html",
+        {
+            "status_code" : exception.status_code,
+            "title" : exception.status_code,
+            "message" : message
+        },
+        status_code=exception.status_code
+    )
+
 
 
 # EOSC
