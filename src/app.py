@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from pathlib import Path
+
+from .dummy_data import DUMMY_POSTS
 
 
 
@@ -23,7 +25,19 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.get('/', name="home", include_in_schema=False)
 def index(request: Request) -> Response:
-    return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {
+            "title" : "Home",
+            "posts" : DUMMY_POSTS
+        }
+    )
+
+
+@app.get("/api/posts")
+def get_posts():
+    return DUMMY_POSTS
 
 
 # EOSC
