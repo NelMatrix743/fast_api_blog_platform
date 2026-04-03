@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, status
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
@@ -36,8 +36,19 @@ def index(request: Request) -> Response:
 
 
 @app.get("/api/posts")
-def get_posts():
+def get_posts() -> JSONResponse:
     return DUMMY_POSTS
+
+
+@app.get("/api/posts/{post_id}")
+def get_post(post_id: int) -> JSONResponse:
+    for post in DUMMY_POSTS:
+        if post["id"] == post_id:
+            return post
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Post not found"
+    )
 
 
 # EOSC
