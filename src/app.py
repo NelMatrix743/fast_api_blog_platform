@@ -21,8 +21,10 @@ app: FastAPI = FastAPI()
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
-# endpoints are defined here
 
+# --- endpoints are defined here ---
+
+# --- WEB INTERFACES ---
 @app.get('/', name="home", include_in_schema=False)
 def index(request: Request) -> Response:
     return templates.TemplateResponse(
@@ -35,6 +37,26 @@ def index(request: Request) -> Response:
     )
 
 
+@app.get("/post/{post_id}", name="post", include_in_schema=False)
+def get_post_page(request: Request, post_id: int) -> Response:
+    for post in DUMMY_POSTS:
+        if post["id"] == post_id:
+            return templates.TemplateResponse(
+                request,
+                "post.html",
+                {
+                    "post" : post,
+                    "title" : post["title"]
+                }
+            )
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Post not found"
+    )
+
+
+
+# --- API INTERFACE ---
 @app.get("/api/posts")
 def get_posts() -> JSONResponse:
     return DUMMY_POSTS
