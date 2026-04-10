@@ -39,7 +39,7 @@ def index(request: Request) -> Response:
     )
 
 
-@app.get("/post/{post_id}", name="post", include_in_schema=False)
+@app.get("/posts/{post_id}", name="post", include_in_schema=False)
 def get_post_page(request: Request, post_id: int) -> Response:
     for post in DUMMY_POSTS:
         if post["id"] == post_id:
@@ -53,7 +53,7 @@ def get_post_page(request: Request, post_id: int) -> Response:
             )
     return HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="Post not found"
+        detail="[TEMPLATE]: Post not found"
     )
 
 
@@ -71,7 +71,7 @@ def get_post(post_id: int) -> JSONResponse:
             return post
     return HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="Post not found"
+        detail="[JSON]: Post not found"
     )
 
 
