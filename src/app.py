@@ -81,7 +81,7 @@ def get_post(post_id: int) -> JSONResponse:
 @app.exception_handler(StarletteHTTPException)
 def general_http_exception_handler(
     request: Request,
-    exception: StarletteHTTPException) -> JSONResponse:
+    exception: StarletteHTTPException) -> Response:
     message = (
         exception.detail
         if exception.detail
@@ -102,6 +102,30 @@ def general_http_exception_handler(
             "message" : message
         },
         status_code=exception.status_code
+    )
+
+
+@app.exception_handler(RequestValidationError)
+def validation_exception_handler(
+    request: Request,
+    exception: RequestValidationError
+) -> Response:
+    if request.url.path.startswith("/api"):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content={
+                "detail" : exception.errors()
+            }
+        )
+    return templates.TemplateResponse(
+        request,
+        "error.html",
+        {
+            "status_code" : status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "title" : status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "message" : "Invalid request. Please check your input and try again."
+        },
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT
     )
 
 
