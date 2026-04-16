@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from pathlib import Path
 
+from .schemas import PostCreate, PostResponse
 from .dummy_data import DUMMY_POSTS
 
 
@@ -60,12 +61,12 @@ def get_post_page(request: Request, post_id: int) -> Response:
 
 
 # --- API INTERFACE ---
-@app.get("/api/posts")
+@app.get("/api/posts", response_model=list[PostResponse])
 def get_posts() -> JSONResponse:
     return DUMMY_POSTS
 
 
-@app.get("/api/posts/{post_id}")
+@app.get("/api/posts/{post_id}", response_model=PostResponse)
 def get_post(post_id: int) -> JSONResponse:
     for post in DUMMY_POSTS:
         if post["id"] == post_id:
@@ -74,7 +75,6 @@ def get_post(post_id: int) -> JSONResponse:
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found"
     )
-
 
 
 # --- general exception handling ---
