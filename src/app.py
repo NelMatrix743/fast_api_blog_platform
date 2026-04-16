@@ -9,6 +9,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from pathlib import Path
 
 from .schemas import PostCreate, PostResponse
+from .utils import generate_datetime
 from .dummy_data import DUMMY_POSTS
 
 
@@ -68,13 +69,28 @@ def get_posts() -> JSONResponse:
 
 @app.get("/api/posts/{post_id}", response_model=PostResponse)
 def get_post(post_id: int) -> JSONResponse:
-    for post in DUMMY_POSTS:
+    for post in DUMMY_POSTS:  
         if post["id"] == post_id:
             return post
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Post not found"
     )
+
+
+@app.post("/api/posts/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+def create_post(post: PostCreate) -> Response:
+    post_id: int = max(p["id"] for p in DUMMY_POSTS) + 1 if DUMMY_POSTS else 1
+    new_post: dict[str, any] = {
+        "id" : post_id,
+        "author" : post.author,
+        "title" : post.title,
+        "content" : post.content,
+        "date_posted" : generate_datetime(),
+    }
+
+    DUMMY_POSTS.append(new_post)
+    return new_post
 
 
 # --- general exception handling ---
