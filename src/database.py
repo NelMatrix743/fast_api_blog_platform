@@ -8,3 +8,9 @@ engine: Engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread" : False}
 )
+
+sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    with sessionLocal() as db:
+        yield db
