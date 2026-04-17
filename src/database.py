@@ -14,3 +14,10 @@ sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def get_db():
     with sessionLocal() as db:
         yield db
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+# EOSC
