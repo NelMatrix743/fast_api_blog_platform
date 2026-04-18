@@ -1,14 +1,9 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 def generate_datetime() -> str:
-    date: datetime = datetime.now()
-    formatted_output: str = (
-        date.strftime("%B ") 
-        + str(date.day) 
-        + date.strftime(", %Y")
-    )
-    return formatted_output
+    date: datetime = datetime.now(UTC)
+    return f"{date.strftime('%B')} {date.day}, {date.year}"
 
 
 # EOSC
