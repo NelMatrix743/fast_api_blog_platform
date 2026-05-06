@@ -84,13 +84,24 @@ def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]) -> JS
         )
     )
 
-    user_exist = result.scalars().first()
+    user_exist: models.User | None = result.scalars().first()
 
     if user_exist:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User already exiss"
         )
+    
+    new_user: models.User = models.User(
+        username=user.username,
+        email=user.email
+    )
+
+    db.add(new_user) # create pending instructions
+    db.commit() # execute pending instructions
+    db.refresh(new_user) # reloads object in db
+
+    return new_user
 
 
 @app.get("/api/posts", response_model=list[PostResponse])
