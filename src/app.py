@@ -22,16 +22,18 @@ from .dummy_data import DUMMY_POSTS
 
 Base.metadata.create_all(bind=engine)
 
-SRC_DIR = Path(__file__).resolve().parent
+SRC_DIR: Path = Path(__file__).resolve().parent
 
 TEMPLATE_DIR: str = SRC_DIR / "templates"
 STATIC_DIR: str = SRC_DIR / "static"
+MEDIA_DIR: str = SRC_DIR / "media"
 
 templates  = Jinja2Templates(directory=TEMPLATE_DIR)
 
 app: FastAPI = FastAPI()
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 
 
 
