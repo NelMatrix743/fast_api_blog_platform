@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field, EmailStr
 
 
@@ -24,14 +26,16 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
-    pass
+    user_id: int
 
 
 class PostResponse(PostBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    date_posted: str
+    user_id: int
+    date_posted: datetime
+    author: UserResponse
     
 
 # EOSC
