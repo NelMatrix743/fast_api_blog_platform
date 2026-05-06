@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Request, HTTPException, status
+from typing import Annotated
+from pathlib import Path
+
+from fastapi import FastAPI, Request, HTTPException, Depends, status
 from fastapi.responses import Response, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -6,13 +9,18 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from pathlib import Path
+from sqlalchemy import select
+from sqlalchemy.orm import session
 
 from .schemas import PostCreate, PostResponse
+from . import models
+from .database import Base, engine, get_db
 from .utils import generate_datetime
 from .dummy_data import DUMMY_POSTS
 
 
+
+Base.metadata.create_all(bind=engine)
 
 SRC_DIR = Path(__file__).resolve().parent
 
