@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Tuple
 from pathlib import Path
 
 from fastapi import FastAPI, Request, HTTPException, Depends, status
@@ -9,10 +9,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from sqlalchemy import select
-from sqlalchemy.orm import session
+from sqlalchemy import Result, or_, select
+from sqlalchemy.orm import Session
 
-from .schemas import PostCreate, PostResponse
+from .schemas import PostCreate, PostResponse, UserCreate, UserResponse
 from . import models
 from .database import Base, engine, get_db
 from .utils import generate_datetime
@@ -72,6 +72,27 @@ def get_post_page(request: Request, post_id: int) -> Response:
 
 
 # --- API INTERFACE ---
+@app.post("/api/users", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]) -> JSONResponse:
+    result: Result[Tuple[models.User]] = db.execute(
+        select(models.User)
+        .where(
+            or_(
+                models.User.username == user.username,
+                models.User.email == user.email
+            )
+        )
+    )
+
+    user_exist = result.scalars().first()
+
+    if user_exist:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User already exiss"
+        )
+
+
 @app.get("/api/posts", response_model=list[PostResponse])
 def get_posts() -> JSONResponse:
     return DUMMY_POSTS
