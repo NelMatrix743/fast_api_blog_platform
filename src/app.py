@@ -104,6 +104,24 @@ def create_user(user: UserCreate, db: Annotated[Session, Depends(get_db)]) -> JS
     return new_user
 
 
+@app.get("/api/users/{user_id}", response_model=UserResponse)
+def get_user(user_id: int, db: Annotated[Session, Depends(get_db)]) -> JSONResponse:
+    result: Result[Tuple[models.User]] = db.execute(
+        select(models.User)
+        .where(models.User.id == user_id)
+    )
+
+    user: models.User | None = result.scalars().first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    return user
+
+
 @app.get("/api/posts", response_model=list[PostResponse])
 def get_posts() -> JSONResponse:
     return DUMMY_POSTS
